@@ -2,11 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Book;
+use Exception;
 use Illuminate\Http\Request;
+use App\Services\BookService;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\Book\BookResource;
+use App\Exceptions\BookNotCreatedException;
+use App\Http\Requests\Book\StoreBookRequest;
+use Illuminate\Http\JsonResponse;
 
 class BookController extends Controller
 {
+
+    public function __construct(BookService $BookService)
+    {
+        $this->BookService = $BookService;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -18,44 +29,37 @@ class BookController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreBookRequest $request): JsonResponse
     {
-        //
+        try {
+            $book = DB::transaction(function () use ($request) {
+                $record = $this->BookService->store($request->validated());
+
+                return $record;
+            });
+
+            $data = ["book" => new BookResource($book)];
+
+            return response()->success($data, 201);
+        } catch (BookNotCreatedException | Exception $exception) {
+            report($exception);
+
+            return response()->error('Error creating new book');
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Book  $book
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Book $book)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Book  $book
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Book $book)
+    public function show($id)
     {
         //
     }
@@ -64,10 +68,10 @@ class BookController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Book  $book
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Book $book)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -75,10 +79,10 @@ class BookController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Book  $book
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Book $book)
+    public function destroy($id)
     {
         //
     }
