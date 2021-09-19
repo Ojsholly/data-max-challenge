@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\Book\BookResource;
 use App\Exceptions\BookNotCreatedException;
+use App\Exceptions\BookNotDeletedException;
 use App\Exceptions\BookNotUpdatedException;
 use App\Http\Requests\Book\StoreBookRequest;
 use App\Http\Requests\Book\UpdateBookRequest;
@@ -88,7 +89,7 @@ class BookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateBookRequest $request, $id)
+    public function update(UpdateBookRequest $request, $id): JsonResponse
     {
         try {
             $book = DB::transaction(function () use ($request, $id) {
@@ -115,8 +116,26 @@ class BookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
-        //
+        try {
+            $book = DB::transaction(function () use ($id) {
+
+                $book = $this->BookService->find(['id' => $id]);
+
+                $delete = $this->BookService->delete(['id' => $id]);
+
+                return $book;
+            });
+
+            return response()->success([], "The book $book->name was deleted successfully", 204, true);
+        } catch (ModelNotFoundException $exception) {
+
+            return response()->error('Requested book not found', 404);
+        } catch (BookNotDeletedException | Exception $exception) {
+            report($exception);
+
+            return response()->error('Error deleting book.', 500);
+        }
     }
 }

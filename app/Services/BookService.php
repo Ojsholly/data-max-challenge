@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Book;
 use App\Exceptions\BookNotCreatedException;
+use App\Exceptions\BookNotDeletedException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -37,6 +38,17 @@ class BookService
         $book = $this->find(['id' => $id]);
 
         $book->update($data);
+
+        return $book;
+    }
+
+    public function delete(array $data): bool
+    {
+        $book = $this->find($data);
+
+        $book = $book->delete();
+
+        throw_if(!$book, new BookNotDeletedException($data));
 
         return $book;
     }
