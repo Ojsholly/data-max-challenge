@@ -24,4 +24,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('external-books', ExternalBookController::class);
 
-Route::apiResource('books', BookController::class)->only(['store', 'index', 'update', 'delete']);
+Route::apiResource('books', BookController::class);
+
+Route::fallback(function () {
+    return response()->error('The endpoint requested does not exist.', 404);
+});

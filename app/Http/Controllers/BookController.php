@@ -65,9 +65,20 @@ class BookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id): JsonResponse
     {
-        //
+        try {
+            $book = $this->BookService->find(['id' => $id]);
+
+            return response()->success(new BookResource($book));
+        } catch (ModelNotFoundException $exception) {
+
+            return response()->error('Requested book not found', 404);
+        } catch (Exception $exception) {
+            report($exception);
+
+            return response()->error('Error fetching requested book');
+        }
     }
 
     /**
