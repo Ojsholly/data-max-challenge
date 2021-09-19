@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Book extends Model
 {
@@ -23,6 +23,30 @@ class Book extends Model
 
     protected $hidden = [
         'created_at',
-        'updated_at'
+        'updated_at',
+        'deleted_at'
     ];
+
+    public static function search(array $data)
+    {
+        $search = static::query();
+
+        $search->when(array_key_exists('name', $data), function ($query) use ($data) {
+            return $query->where('name', 'LIKE', "%" . $data["name"] . "%");
+        });
+
+        $search->when(array_key_exists('country', $data), function ($query) use ($data) {
+            return $query->where('country', $data["country"]);
+        });
+
+        $search->when(array_key_exists('publisher', $data), function ($query) use ($data) {
+            return $query->where('publisher', 'LIKE', "%" . $data["publisher"] . "%");
+        });
+
+        $search->when(array_key_exists('release_date', $data), function ($query) use ($data) {
+            return $query->where('release_date', $data["release_date"]);
+        });
+
+        return $search;
+    }
 }

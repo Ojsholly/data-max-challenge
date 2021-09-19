@@ -22,7 +22,7 @@ class BookResource extends JsonResource
             "number_of_pages" => $this->number_of_pages,
             "publisher" => $this->publisher,
             "country" => $this->country,
-            "release_date" => $this->release_date->toDateString()
+            "release_date" => $this->release_date->format('Y-m-d')
         ];
     }
 }

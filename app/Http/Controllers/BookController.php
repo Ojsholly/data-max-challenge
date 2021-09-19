@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use App\Services\BookService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\Book\BookResource;
 use App\Exceptions\BookNotCreatedException;
 use App\Http\Requests\Book\StoreBookRequest;
-use Illuminate\Http\JsonResponse;
+use App\Http\Resources\Book\BookResourceCollection;
 
 class BookController extends Controller
 {
@@ -25,7 +26,9 @@ class BookController extends Controller
      */
     public function index()
     {
-        //
+        $books = $this->BookService->search(request()->only(['name', 'country', 'publisher', 'release_date']));
+
+        return response()->success(new BookResourceCollection($books));
     }
 
     /**
