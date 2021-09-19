@@ -9,8 +9,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\Book\BookResource;
 use App\Exceptions\BookNotCreatedException;
+use App\Exceptions\BookNotUpdatedException;
 use App\Http\Requests\Book\StoreBookRequest;
+use App\Http\Requests\Book\UpdateBookRequest;
 use App\Http\Resources\Book\BookResourceCollection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BookController extends Controller
 {
@@ -48,7 +51,7 @@ class BookController extends Controller
 
             $data = ["book" => new BookResource($book)];
 
-            return response()->success($data, 201);
+            return response()->success($data, "", 201);
         } catch (BookNotCreatedException | Exception $exception) {
             report($exception);
 
@@ -74,9 +77,25 @@ class BookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateBookRequest $request, $id)
     {
-        //
+        try {
+            $book = DB::transaction(function () use ($request, $id) {
+
+                $update = $this->BookService->update(array_filter($request->validated()), $id);
+
+                return $update;
+            });
+
+            return response()->success(new BookResource($book), "The book $book->name, was updated successfully");
+        } catch (ModelNotFoundException $exception) {
+
+            return response()->error('Requested book not found', 404);
+        } catch (BookNotUpdatedException | Exception $exception) {
+            report($exception);
+
+            return response()->error('Error updating book.', 500);
+        }
     }
 
     /**
