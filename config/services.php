@@ -30,4 +30,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'resource' => [
+        'url' => env('RESOURCE_URL', 'https://www.anapioficeandfire.com/api')
+    ],
+
 ];
