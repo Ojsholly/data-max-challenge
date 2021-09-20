@@ -19,12 +19,10 @@ class BookService
         return $book;
     }
 
-    public function search(array $params): LengthAwarePaginator
+    public function search(array $data): LengthAwarePaginator
     {
-        $data = array_filter($params, fn ($value) => ($value !== NULL && $value !== '0' && $value !== ''));
-
-        return Book::search($data)
-            ->orderBy($params['orderBy'] ?? 'name', $params['asc'] ?? true ? 'asc' : 'desc')
+        return Book::search($data['search'] ?? '')
+            ->orderBy($params['orderBy'] ?? 'id', $params['asc'] ?? true ? 'asc' : 'desc')
             ->paginate($data['perPage'] ?? 10, ['*'], 'page', $data['page'] ?? 1);
     }
 

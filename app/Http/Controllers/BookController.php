@@ -33,10 +33,10 @@ class BookController extends Controller
         $perPage = request()->query('perPage', 10);
         $page = request()->query('page', 1);
         $asc = request()->query('asc', true);
-        $orderBy = request()->query('orderBy', 'name');
+        $orderBy = request()->query('orderBy', 'id');
 
         $books = $this->BookService->search(
-            request()->only(['name', 'country', 'publisher', 'release_date'])
+            request()->only(['search'])
                 + ['perPage' => $perPage, 'page' => $page, 'asc' => $asc, 'orderBy' => $orderBy]
         );
 

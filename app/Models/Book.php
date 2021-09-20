@@ -29,26 +29,14 @@ class Book extends Model
         'deleted_at'
     ];
 
-    public static function search(array $data): Builder
+    public static function search(string $search): Builder
     {
-        $search = static::query();
-
-        $search->when(array_key_exists('name', $data), function ($query) use ($data) {
-            return $query->where('name', 'LIKE', "%" . $data["name"] . "%");
-        });
-
-        $search->when(array_key_exists('country', $data), function ($query) use ($data) {
-            return $query->where('country', $data["country"]);
-        });
-
-        $search->when(array_key_exists('publisher', $data), function ($query) use ($data) {
-            return $query->where('publisher', 'LIKE', "%" . $data["publisher"] . "%");
-        });
-
-        $search->when(array_key_exists('release_date', $data), function ($query) use ($data) {
-            return $query->whereYear('release_date', Carbon::parse($data["release_date"])->format('Y'));
-        });
-
-        return $search;
+        return empty($search) ? static::query() :
+            static::query()->where('name', 'LIKE', "%" . $search . "%")
+            ->OrWhere('country', 'LIKE', "%" . $search . "%")
+            ->orWhere('publisher', 'LIKE', "%" . $search . "%")
+            ->when(strtotime($search), function ($query) use ($search) {
+                return $query->orWhereYear('release_date', Carbon::parse($search)->format('Y'));
+            });
     }
 }
