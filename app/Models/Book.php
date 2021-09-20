@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -45,7 +46,7 @@ class Book extends Model
         });
 
         $search->when(array_key_exists('release_date', $data), function ($query) use ($data) {
-            return $query->where('release_date', $data["release_date"]);
+            return $query->whereYear('release_date', Carbon::parse($data["release_date"])->format('Y'));
         });
 
         return $search;

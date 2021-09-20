@@ -30,7 +30,15 @@ class BookController extends Controller
      */
     public function index()
     {
-        $books = $this->BookService->search(request()->only(['name', 'country', 'publisher', 'release_date']));
+        $perPage = request()->query('perPage', 10);
+        $page = request()->query('page', 1);
+        $asc = request()->query('asc', true);
+        $orderBy = request()->query('orderBy', 'name');
+
+        $books = $this->BookService->search(
+            request()->only(['name', 'country', 'publisher', 'release_date'])
+                + ['perPage' => $perPage, 'page' => $page, 'asc' => $asc, 'orderBy' => $orderBy]
+        );
 
         return response()->success(new BookResourceCollection($books));
     }

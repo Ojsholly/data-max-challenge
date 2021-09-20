@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Models\Book;
 use App\Exceptions\BookNotCreatedException;
 use App\Exceptions\BookNotDeletedException;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class BookService
 {
@@ -19,9 +19,13 @@ class BookService
         return $book;
     }
 
-    public function search(array $data): Collection
+    public function search(array $params): LengthAwarePaginator
     {
-        return Book::search($data)->get();
+        $data = array_filter($params, fn ($value) => ($value !== NULL && $value !== '0' && $value !== ''));
+
+        return Book::search($data)
+            ->orderBy($params['orderBy'] ?? 'name', $params['asc'] ?? true ? 'asc' : 'desc')
+            ->paginate($data['perPage'] ?? 10, ['*'], 'page', $data['page'] ?? 1);
     }
 
     public function find(array $data): Book
