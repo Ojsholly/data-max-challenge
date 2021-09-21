@@ -48,6 +48,8 @@ php artisan key:generate
 php artisan migrate --seed
 ```
 
+Navigate to http://base_url/index to see the front end implementation.
+
 ### Run Tests
 
 ```bash
