@@ -18,11 +18,6 @@ class Index extends Component
 
     protected $listeners = ['delete'];
 
-    public function dispatchRequest($request): object
-    {
-        return Route::dispatch($request);
-    }
-
     public function render()
     {
         $request = Request::create("/api/books", 'GET', [
@@ -31,25 +26,25 @@ class Index extends Component
             'orderBy' => $this->orderBy,
         ]);
 
-        $books = $this->dispatchRequest($request)->getData();
+        $books = call($request);
 
-        $this->books = collect($books->data);
+        $this->books = $books->data;
 
-        return view('livewire.index');
+        return view('livewire.index', ['books' => $books]);
     }
 
     public function findBook(int $id)
     {
         $request = Request::create("/api/books/$id", "GET");
 
-        return $this->dispatchRequest($request)->getData();
+        return call($request)->data;
     }
 
     public function editBook(int $id)
     {
         $book = $this->findBook($id);
 
-        return redirect()->to("/edit/" . $book->data->id, ['book' => $book]);
+        return redirect(config('app.url') . '/edit/' . $book->id);
     }
 
     public function confirmDelete(int $id): void
@@ -58,8 +53,8 @@ class Index extends Component
 
         $this->dispatchBrowserEvent('swal:confirm', [
             'title' => "Delete Book",
-            'text' => "Delete " . $book->data->name . "?",
-            'book' => $book->data
+            'text' => "Delete " . $book->name . "?",
+            'book' => $book
         ]);
     }
 
@@ -67,6 +62,14 @@ class Index extends Component
     {
         $request = Request::create("/api/books/$id", "DELETE");
 
-        $book = $this->dispatchRequest($request);
+        $delete = call($request);
+
+        $response = $delete->data;
+
+        if ($delete->status_code != 200) {
+            $this->dispatchBrowserEvent('swal:error', ['response' => $response, 'message' => $delete->message]);
+        }
+
+        $this->dispatchBrowserEvent('swal:success', ['response' => $response, 'message' => $delete->message]);
     }
 }

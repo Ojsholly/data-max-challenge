@@ -22,19 +22,19 @@ class WebController extends Controller
 
         $request = Request::create($url, "GET");
 
-        $books = Route::dispatch($request)->getData();
+        $books = call($request);
 
-        $books = collect($books->data);
-
-        return view('index', ['books' => $books]);
+        return view('index', ['books' => $books->data]);
     }
 
     public function edit(int $id): View
     {
         $request = Request::create("/api/books/$id", "GET");
 
-        $book = Route::dispatch($request);
+        $book = call($request);
 
-        return view('edit', ['book' => $book->getData()]);
+        abort_unless($book->status_code == 200, $book->status_code, $book->message);
+
+        return view('edit', ['book' => $book->data]);
     }
 }

@@ -35,15 +35,15 @@ class Update extends Component
 
     public function mount($book)
     {
-        $this->name = $book->data->name;
-        $this->isbn = $book->data->isbn;
-        $this->authors = implode(", ", $book->data->authors);
-        $this->country = $book->data->country;
-        $this->publisher = $book->data->country;
-        $this->number_of_pages = $book->data->number_of_pages;
-        $this->publisher = $book->data->publisher;
-        $this->release_date = $book->data->release_date;
-        $this->book_id = $book->data->id;
+        $this->name = $book->name;
+        $this->isbn = $book->isbn;
+        $this->authors = implode(", ", $book->authors);
+        $this->country = $book->country;
+        $this->publisher = $book->country;
+        $this->number_of_pages = $book->number_of_pages;
+        $this->publisher = $book->publisher;
+        $this->release_date = $book->release_date;
+        $this->book_id = $book->id;
     }
 
     public function updated($field)
@@ -64,18 +64,16 @@ class Update extends Component
 
         $request = Request::create("/api/books/" . $this->book_id, "PATCH", $data);
 
-        $request->headers->set('accept', 'application/json');
+        $update = call($request);
 
-        $update = app()->handle($request);
+        $response = $update->data;
 
-        $response = $update->getContent();
+        if ($update->status_code != 200) {
 
-        if ($update->status() != 200) {
-
-            $this->dispatchBrowserEvent('swal:error', ['response' => json_decode($response)]);
+            $this->dispatchBrowserEvent('swal:error', ['response' => $response, 'message' => $update->message]);
             return false;
         }
 
-        $this->dispatchBrowserEvent('swal:success', ['response' => json_decode($response)]);
+        $this->dispatchBrowserEvent('swal:success', ['response' => $response, 'message' => $update->message]);
     }
 }
