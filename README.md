@@ -6,7 +6,7 @@ The project is a collection of endpoints for the assessment test. A postman coll
 
 ## Project Setup
 
-### Cloning the GitLab Repository.
+### Cloning the GitHub Repository.
 
 Clone the repository to your local machine via ssh by running the terminal command below.
 
