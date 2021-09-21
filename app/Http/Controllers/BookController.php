@@ -30,7 +30,15 @@ class BookController extends Controller
      */
     public function index()
     {
-        $books = $this->BookService->search(request()->only(['name', 'country', 'publisher', 'release_date']));
+        $perPage = request()->query('perPage', 10);
+        $page = request()->query('page', 1);
+        $asc = request()->query('asc', true);
+        $orderBy = request()->query('orderBy', 'id');
+
+        $books = $this->BookService->search(
+            request()->only(['search'])
+                + ['perPage' => $perPage, 'page' => $page, 'asc' => $asc, 'orderBy' => $orderBy]
+        );
 
         return response()->success(new BookResourceCollection($books));
     }
@@ -98,8 +106,6 @@ class BookController extends Controller
 
                 return $update;
             });
-
-            return response()->success(new BookResource($book), "The book $book->name, was updated successfully");
         } catch (ModelNotFoundException $exception) {
 
             return response()->error('Requested book not found', 404);
@@ -108,6 +114,8 @@ class BookController extends Controller
 
             return response()->error('Error updating book.', 500);
         }
+
+        return response()->success(new BookResource($book), "The book $book->name, was updated successfully");
     }
 
     /**
