@@ -18,4 +18,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('index', WebController::class);
+Route::get('index', [WebController::class, 'index'])->name('index');
+
+Route::get("edit/{id}", [WebController::class, 'edit'])->name('edit');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -13,7 +14,7 @@ class WebController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function __invoke(Request $request)
+    public function index(Request $request): View
     {
         $url = Request::create("/api/books", 'GET')->fullUrlWithQuery([
             'search' => ''
@@ -26,5 +27,14 @@ class WebController extends Controller
         $books = collect($books->data);
 
         return view('index', ['books' => $books]);
+    }
+
+    public function edit(int $id): View
+    {
+        $request = Request::create("/api/books/$id", "GET");
+
+        $book = Route::dispatch($request);
+
+        return view('edit', ['book' => $book->getData()]);
     }
 }

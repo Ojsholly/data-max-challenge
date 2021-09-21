@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Book;
 
+use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use Intervention\Validation\Rules\Isbn;
 use Illuminate\Foundation\Http\FormRequest;
@@ -33,7 +34,7 @@ class UpdateBookRequest extends FormRequest
             'country' => 'sometimes|nullable|string',
             'number_of_pages' => 'sometimes|nullable|integer|min:1',
             'publisher' => 'sometimes|nullable|string',
-            'release_date' => 'sometimes|nullable|date|date_format:Y-m-d'
+            'release_date' => 'sometimes|nullable|date|date_format:Y-m-d|before_or_equal:' . Carbon::yesterday()->format('Y-m-d')
         ];
     }
 }

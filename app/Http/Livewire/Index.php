@@ -18,7 +18,7 @@ class Index extends Component
 
     protected $listeners = ['delete'];
 
-    public function dispatchRequest($request)
+    public function dispatchRequest($request): object
     {
         return Route::dispatch($request);
     }
@@ -38,11 +38,23 @@ class Index extends Component
         return view('livewire.index');
     }
 
-    public function confirmDelete(int $id)
+    public function findBook(int $id)
     {
         $request = Request::create("/api/books/$id", "GET");
 
-        $book = $this->dispatchRequest($request)->getData();
+        return $this->dispatchRequest($request)->getData();
+    }
+
+    public function editBook(int $id)
+    {
+        $book = $this->findBook($id);
+
+        return redirect()->to("/edit/" . $book->data->id, ['book' => $book]);
+    }
+
+    public function confirmDelete(int $id): void
+    {
+        $book = $this->findBook($id);
 
         $this->dispatchBrowserEvent('swal:confirm', [
             'title' => "Delete Book",
@@ -51,7 +63,7 @@ class Index extends Component
         ]);
     }
 
-    public function delete(int $id)
+    public function delete(int $id): void
     {
         $request = Request::create("/api/books/$id", "DELETE");
 

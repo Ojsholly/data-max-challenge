@@ -26,7 +26,8 @@
                 <td class="px-4 py-2 border">{{ $book->country }}</td>
                 <td class="px-4 py-2 border">{{ $book->release_date }}</td>
                 <td class="px-4 py-2 border">
-                    <a href="#" class="bg-yellow-500 hover:bg-yellow-700 text-white text-center py-2 px-4 rounded">
+                    <a wire:click="editBook({{ $book->id }})"
+                        class="bg-yellow-500 hover:bg-yellow-700 text-white text-center py-2 px-4 rounded">
                         Edit
                     </a>
                 </td>

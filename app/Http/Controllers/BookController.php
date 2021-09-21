@@ -106,8 +106,6 @@ class BookController extends Controller
 
                 return $update;
             });
-
-            return response()->success(new BookResource($book), "The book $book->name, was updated successfully");
         } catch (ModelNotFoundException $exception) {
 
             return response()->error('Requested book not found', 404);
@@ -116,6 +114,8 @@ class BookController extends Controller
 
             return response()->error('Error updating book.', 500);
         }
+
+        return response()->success(new BookResource($book), "The book $book->name, was updated successfully");
     }
 
     /**
