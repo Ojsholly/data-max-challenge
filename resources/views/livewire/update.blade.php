@@ -107,7 +107,7 @@
     window.addEventListener('swal:error', event => {
             Swal.fire({
                 title: 'Error',
-                text: event.detail.response.message,
+                text: event.detail.message,
                 icon: 'error'
             });
         });
@@ -115,12 +115,12 @@
     window.addEventListener('swal:success', event => {
         Swal.fire({
             title: 'Success',
-            text: event.detail.response.message,
+            text: event.detail.message,
             icon: 'success'
         });
 
         setTimeout(function(){
-            window.location.href = "{{ route('index') }}";
+            window.location.href = "{{ config('app.url') . '/index' }}";
         }, 3000);
 
     });

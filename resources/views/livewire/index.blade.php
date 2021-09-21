@@ -27,13 +27,13 @@
                 <td class="px-4 py-2 border">{{ $book->release_date }}</td>
                 <td class="px-4 py-2 border">
                     <a wire:click="editBook({{ $book->id }})"
-                        class="bg-yellow-500 hover:bg-yellow-700 text-white text-center py-2 px-4 rounded">
+                        class="bg-yellow-500 hover:bg-yellow-700 cursor-pointer text-white text-center py-2 px-4 rounded">
                         Edit
                     </a>
                 </td>
                 <td class="px-4 py-2 border">
                     <a wire:click="confirmDelete({{ $book->id }})"
-                        class="bg-red-500 hover:bg-red-700 text-white text-center py-2 px-4 rounded">
+                        class="bg-red-500 hover:bg-red-700 text-white cursor-pointer text-center py-2 px-4 rounded">
                         Delete
                     </a>
                 </td>
@@ -59,6 +59,23 @@
                 window.livewire.emit('delete', event.detail.book.id);
             }
             });
+        });
+
+        window.addEventListener('swal:error', event => {
+            Swal.fire({
+            title: 'Error',
+            text: event.detail.message,
+            icon: 'error'
+            });
+        });
+
+        window.addEventListener('swal:success', event => {
+            Swal.fire({
+            title: 'Success',
+            text: event.detail.message,
+            icon: 'success'
+        });
+
         });
 </script>
 @endpush
